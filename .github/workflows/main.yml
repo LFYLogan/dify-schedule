@@ -26,5 +26,6 @@ jobs:
           DIFY_TOKENS: ${{ secrets.DIFY_TOKENS }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          DIFY_INPUTS: ${{ secrets.DIFY_INPUTS }}
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
         run: node ql_dify_workflow.js
