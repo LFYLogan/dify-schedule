@@ -1,10 +1,16 @@
+/*
+  cron 51 8 * * * dify_workflow.js
+  掘金社区
+  更新时间:2024-12-18
+  只支持Node.js
+  脚本兼容: Node.js
+  ***********************************************************
+ */
 // import notify from "./notify.js";
 import { WorkflowClient } from "./sdk/dify.js";
-import nodemailer from 'nodemailer';
 
 const $ = new Env("Dify-定时工作流");
 let tokensArr = [];
-
 // 判断环境变量里面是否有Dify tokens
 if (process.env.DIFY_TOKENS) {
   if (process.env.DIFY_TOKENS.indexOf(";") > -1) {
@@ -12,7 +18,7 @@ if (process.env.DIFY_TOKENS) {
   } else if (process.env.DIFY_TOKENS.indexOf("\n") > -1) {
     tokensArr = process.env.DIFY_TOKENS.split("\n");
   } else {
-    tokensArr = [process.env.DIFY_TOKENS];
+    CookieJJs = [process.env.DIFY_TOKENS];
   }
 }
 tokensArr = [...new Set(tokensArr.filter((item) => !!item))];
@@ -20,7 +26,7 @@ console.log(
   `\n====================共${tokensArr.length}个Dify工作流=========\n`
 );
 
-const DIFY_BASE_URL = process.env.DIFY_BASE_URL || 'https://api.dify.ai/v1';
+const DIFY_BASE_URL = process.env.DIFY_BASE_URL || 'https://api.dify.ai/v1'
 
 class Task {
   constructor(dify) {
@@ -60,7 +66,7 @@ class WorkflowTask extends Task {
     );
     console.log(`正在获取Dify工作流基础信息...`);
     const info = await workflow.info(user);
-    this.workflowName = info.data?.name || "";
+    this.workfolwName = info.data?.name || "";
     console.log(`Dify工作流【${info.data.name}】开始执行...`);
     const response = await workflow.getWorkflowResult(inputs, user, true);
     this.result = response.text || "";
@@ -71,37 +77,12 @@ class WorkflowTask extends Task {
   }
 }
 
-// Function to send email
-async function sendEmail(subject, message) {
-  let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
-
-  let mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_TO,
-    subject: subject,
-    text: message
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log('邮件发送成功');
-  } catch (error) {
-    console.error('邮件发送失败', error);
-  }
-}
-
 !(async () => {
   if (!tokensArr[0]) {
     $.msg($.name, "【提示】请先填写Dify工作流token");
     return;
   }
-  let messageList = [];
+  let messageList = [];1
   for (let token of tokensArr) {
     const workflow = new WorkflowTask({ token });
 
@@ -115,11 +96,11 @@ async function sendEmail(subject, message) {
   }
 
   const message = messageList.join(`\n${"-".repeat(15)}\n`);
-  await sendEmail("Dify定时工作流结果", message);
+  await notify.sendNotify("Dify定时工作流", message);
 })()
   .catch((e) => {
-    console.error(`❌ ${$.name}, 失败! 原因: ${e}!`);
-    sendEmail("Dify定时工作流-失败", e.message);
+    $.log("", `❌ ${$.name}, 失败! 原因: ${e}!`, "");
+    notify.sendNotify("Dify定时工作流-失败", e.message);
   })
   .finally(() => {
     $.done();
