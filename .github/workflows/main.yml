@@ -1,0 +1,31 @@
+name: Run Dify Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-dify-workflow:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14'
+
+    - name: Run Dify Workflow
+      env:
+        DIFY_TOKENS: ${{ secrets.DIFY_TOKENS }}
+        DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL }}
+        DIFY_INPUTS: ${{ secrets.DIFY_INPUTS }}
+        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+        EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        EMAIL_USER: ${{ secrets.EMAIL_USER }}
+      run: |
+        npm install
+        node dify_workflow.js
