@@ -1,9 +1,8 @@
 name: Run Dify Workflow
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '30 8 * * *'  # 每天早上8:30运行
 
 jobs:
   run-dify-workflow:
@@ -25,8 +24,8 @@ jobs:
         env:
           DIFY_TOKENS: ${{ secrets.DIFY_TOKENS }}
           DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL }}
-          DIFY_INPUTS: ${{ secrets.DIFY_INPUTS }}
+          DIFY_INPUTS: '7' # 固定输入值为7
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
-        run: node ql_dify_workflow.js
+        run: node dify_workflow.js
